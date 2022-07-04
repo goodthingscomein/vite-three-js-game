@@ -1,4 +1,7 @@
-import Main from './scripts/main';
 import './style.css';
 
-const main = new Main();
+import { World } from './scripts/World';
+import { StartRenderLoop } from './scripts/systems/RenderLoop';
+
+const _world = new World();
+StartRenderLoop(_world._renderer);
