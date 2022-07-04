@@ -28,6 +28,8 @@ function CreatePlayer(color: ColorRepresentation) {
     y: 0,
   };
 
+  let walking = false;
+
   /** GPointer Lock */
   let mouseLocked = false;
   const canvas = document.querySelector<HTMLCanvasElement>('#c')!;
@@ -61,10 +63,7 @@ function CreatePlayer(color: ColorRepresentation) {
   // Mouse Button Released
   playerInput._LMBReleased = () => (mousePressed.LMB = false);
   playerInput._RMBReleased = () => (mousePressed.RMB = false);
-  playerInput._MMBReleased = () => {
-    mousePressed.MMB = false;
-    keysPressed.W = false;
-  };
+  playerInput._MMBReleased = () => (mousePressed.MMB = false);
   // Mouse Movement
   playerInput._MouseMove = (e) => {
     console.log(e.movementX);
@@ -74,8 +73,10 @@ function CreatePlayer(color: ColorRepresentation) {
 
   /** Player Loop */
   player._Tick = (deltaTime: number) => {
+    if (keysPressed.W || mousePressed.MMB || (mousePressed.LMB && mousePressed.RMB)) walking = true;
+    else walking = false;
     /** Calculate movement */
-    if (keysPressed.W) player._mesh.translateZ(moveSpeed * deltaTime);
+    if (walking) player._mesh.translateZ(moveSpeed * deltaTime);
     if (keysPressed.S) player._mesh.translateZ(-moveSpeed * deltaTime);
     if (keysPressed.A) player._mesh.translateX(moveSpeed * deltaTime);
     if (keysPressed.D) player._mesh.translateX(-moveSpeed * deltaTime);
@@ -83,10 +84,7 @@ function CreatePlayer(color: ColorRepresentation) {
     /** Calculate rotation */
     mousePressed.MMB || mousePressed.RMB ? canvas.requestPointerLock() : document.exitPointerLock();
     document.pointerLockElement === canvas ? (mouseLocked = true) : (mouseLocked = false);
-    if (mouseLocked) {
-      targetRotation.y -= mouseChanged.x * 0.05 * deltaTime;
-      if (mousePressed.MMB) keysPressed.W = true;
-    }
+    if (mouseLocked) targetRotation.y -= mouseChanged.x * 0.05 * deltaTime;
     player._mesh.rotation.copy(targetRotation);
   };
 
