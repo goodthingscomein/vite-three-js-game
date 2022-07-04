@@ -28,7 +28,7 @@ function CreatePlayer(color: ColorRepresentation) {
     y: 0,
   };
 
-  let walking = false;
+  let movingForward = false;
 
   /** GPointer Lock */
   let mouseLocked = false;
@@ -73,10 +73,12 @@ function CreatePlayer(color: ColorRepresentation) {
 
   /** Player Loop */
   player._Tick = (deltaTime: number) => {
-    if (keysPressed.W || mousePressed.MMB || (mousePressed.LMB && mousePressed.RMB)) walking = true;
-    else walking = false;
+    /** Calculate if the player is trying to walk forward */
+    if (keysPressed.W || mousePressed.MMB || (mousePressed.LMB && mousePressed.RMB)) movingForward = true;
+    else movingForward = false;
+
     /** Calculate movement */
-    if (walking) player._mesh.translateZ(moveSpeed * deltaTime);
+    if (movingForward) player._mesh.translateZ(moveSpeed * deltaTime);
     if (keysPressed.S) player._mesh.translateZ(-moveSpeed * deltaTime);
     if (keysPressed.A) player._mesh.translateX(moveSpeed * deltaTime);
     if (keysPressed.D) player._mesh.translateX(-moveSpeed * deltaTime);
