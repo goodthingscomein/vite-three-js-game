@@ -34,7 +34,8 @@ class World {
   }
 
   _Init() {
-    camera.position.set(0, 0, 10); // Move the camera backwards
+    camera.position.set(0, 7, 20); // Move the camera backwards
+    camera.rotation.set(-0.25, 0, 0); // Move the camera backwards
   }
 
   /** Start the game loop */
@@ -45,6 +46,10 @@ class World {
   /** Stop the game loop */
   _Stop() {
     loop._Stop();
+  }
+
+  _MakeInstance(obj: Mesh) {
+    scene.add(obj);
   }
 
   _MakeMeshObjectInstance(obj: MeshObject) {
