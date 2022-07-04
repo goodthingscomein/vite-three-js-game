@@ -1,4 +1,4 @@
-import { WebGLRenderer, Scene, PerspectiveCamera } from 'three';
+import { WebGLRenderer, Scene, PerspectiveCamera, PCFSoftShadowMap } from 'three';
 
 class Renderer {
   _webGLRenderer: WebGLRenderer;
@@ -14,6 +14,8 @@ class Renderer {
   _CreateRenderer(canvas: HTMLCanvasElement) {
     const renderer = new WebGLRenderer({ canvas, antialias: true });
     renderer.physicallyCorrectLights = true;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = PCFSoftShadowMap;
     return renderer;
   }
 
