@@ -1,7 +1,7 @@
 import './style.css';
 
 import { World } from './scripts/World';
-import { CreateCube } from './scripts/components/MeshObject';
+import { CreateCube } from './scripts/prefabs/Cube';
 import { CreateDirectionalLight } from './scripts/components/Light';
 
 const _world = new World();
