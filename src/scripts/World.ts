@@ -1,4 +1,4 @@
-import type { PerspectiveCamera, Scene, Mesh, Light } from 'three';
+import { PerspectiveCamera, Scene, Mesh, Light, MathUtils } from 'three';
 
 // Systems
 import { Renderer } from './systems/Renderer';
@@ -34,8 +34,8 @@ class World {
   }
 
   _Init() {
-    camera.position.set(0, 7, 20); // Move the camera backwards
-    camera.rotation.set(-0.25, 0, 0); // Move the camera backwards
+    camera.position.set(0, 7, -20); // Move the camera backwards
+    camera.rotation.set(MathUtils.degToRad(15), MathUtils.degToRad(180), 0); // Move the camera backwards
   }
 
   /** Start the game loop */
