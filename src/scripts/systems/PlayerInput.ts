@@ -16,6 +16,20 @@ class PlayerInput {
       if (e.key === 'd') this._DReleased();
       if (e.key === ' ') this._SpaceReleased();
     });
+    /** Mouse Pressed Listener */
+    window.addEventListener('mousedown', (e) => {
+      if (e.button === 0) this._LMBPressed();
+      if (e.button === 1) this._MMBPressed();
+      if (e.button === 2) this._RMBPressed();
+    });
+    /** Mouse Released Listener */
+    window.addEventListener('mouseup', (e) => {
+      if (e.button === 0) this._LMBReleased();
+      if (e.button === 1) this._MMBReleased();
+      if (e.button === 2) this._RMBReleased();
+    });
+    /** Mouse Movement Listener */
+    window.addEventListener('mousemove', (e) => this._MouseMove(e));
   }
 
   /** Keys Pressed */
@@ -31,6 +45,19 @@ class PlayerInput {
   _AReleased() {}
   _DReleased() {}
   _SpaceReleased() {}
+
+  /** Mouse Pressed */
+  _LMBPressed() {}
+  _RMBPressed() {}
+  _MMBPressed() {}
+
+  /** Mouse Released */
+  _LMBReleased() {}
+  _RMBReleased() {}
+  _MMBReleased() {}
+
+  /** Mouse Movement */
+  _MouseMove(e: MouseEvent) {}
 }
 
 export { PlayerInput };

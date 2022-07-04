@@ -28,3 +28,8 @@ _world._MakeInstance(ground);
 /** Create the skybox */
 const skybox = CreateSkybox();
 _world._MakeInstance(skybox);
+
+/** Prevent the context menu */
+window.oncontextmenu = (e) => {
+  e.preventDefault();
+};
