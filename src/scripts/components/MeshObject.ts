@@ -6,7 +6,7 @@ class MeshObject {
     this._mesh = new Mesh(geometry, material);
   }
 
-  _Tick(deltaTime: number) {}
+  _Tick(deltaTime: number, ...args: any) {}
 }
 
 export { MeshObject };
