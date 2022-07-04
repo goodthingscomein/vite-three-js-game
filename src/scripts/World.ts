@@ -1,34 +1,65 @@
-import type { PerspectiveCamera, Scene } from 'three';
+import type { PerspectiveCamera, Scene, Mesh, Light } from 'three';
 
 // Systems
 import { Renderer } from './systems/Renderer';
+import { Loop } from './systems/Loop';
 
 // Components
 import { CreateScene } from './components/Scene';
 import { CreateCamera } from './components/Camera';
-import { CreateCube } from './components/Cube';
-import { CreateDirectionalLight } from './components/Light';
+import { MeshObject } from './components/MeshObject';
+
+let canvas: HTMLCanvasElement;
+let scene: Scene;
+let camera: PerspectiveCamera;
+let renderer: Renderer;
+
+let loop: Loop;
+
+let meshObjects: MeshObject[];
+let lightObjects: Light[];
 
 class World {
-  _canvas: HTMLCanvasElement;
-  _scene: Scene;
-  _camera: PerspectiveCamera;
-  _renderer: Renderer;
-
   constructor() {
-    this._canvas = document.querySelector<HTMLCanvasElement>('#c')!;
-    this._scene = CreateScene(0x222222);
-    this._camera = CreateCamera();
-    this._renderer = new Renderer(this._canvas, this._scene, this._camera);
+    canvas = document.querySelector<HTMLCanvasElement>('#c')!;
+    scene = CreateScene(0x222222);
+    camera = CreateCamera();
+    renderer = new Renderer(canvas, scene, camera);
+    loop = new Loop(this, camera, scene, renderer);
+    meshObjects = [];
+    lightObjects = [];
+
+    /** Initialize the world */
     this._Init();
   }
 
   _Init() {
-    this._camera.position.set(0, 0, 10); // Move the camera backwards
-    const cube = CreateCube(0x66dd00);
-    cube.rotation.set(-0.5, -0.1, 0.8);
-    this._scene.add(cube); // Create a Cube
-    this._scene.add(CreateDirectionalLight(0xffffff, 3));
+    camera.position.set(0, 0, 10); // Move the camera backwards
+  }
+
+  /** Start the game loop */
+  _Start() {
+    loop._Start();
+  }
+
+  /** Stop the game loop */
+  _Stop() {
+    loop._Stop();
+  }
+
+  _MakeMeshObjectInstance(obj: MeshObject) {
+    scene.add(obj._mesh);
+    meshObjects.push(obj); // Store the mesh
+    loop._updatables.push(obj);
+  }
+
+  _MakeLightInstance(light: Light) {
+    scene.add(light);
+    lightObjects.push(light); // Store the light
+  }
+
+  _GetAllMeshes() {
+    return meshObjects;
   }
 }
 
