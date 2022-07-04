@@ -23,7 +23,7 @@ _world._MakeLightInstance(ambientLight);
 
 /** Create the ground object */
 const ground = CreateGround();
-_world._MakeMeshObjectInstance(ground);
+_world._MakeInstance(ground);
 
 /** Create the skybox */
 const skybox = CreateSkybox();
