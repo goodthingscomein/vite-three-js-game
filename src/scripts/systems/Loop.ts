@@ -3,12 +3,13 @@ import { MeshObject } from '../components/MeshObject';
 import { World } from '../World';
 import { Renderer } from './Renderer';
 
+let clock: Clock;
+
 class Loop {
   _world: World;
   _camera: PerspectiveCamera;
   _scene: Scene;
   _renderer: Renderer;
-  _clock: Clock;
   _updatables: MeshObject[];
 
   constructor(world: World, camera: PerspectiveCamera, scene: Scene, renderer: Renderer) {
@@ -16,8 +17,9 @@ class Loop {
     this._camera = camera;
     this._scene = scene;
     this._renderer = renderer;
-    this._clock = new Clock(true);
     this._updatables = [];
+
+    clock = new Clock();
   }
 
   /** Start the game Loop */
@@ -34,8 +36,9 @@ class Loop {
   }
 
   _Tick() {
+    const deltaTime = clock.getDelta();
     for (const obj of this._updatables) {
-      obj._Tick();
+      obj._Tick(deltaTime);
     }
   }
 }
