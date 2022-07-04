@@ -1,14 +1,14 @@
 import { WebGLRenderer, Scene, PerspectiveCamera } from 'three';
 
 class Renderer {
-  _renderer: WebGLRenderer;
+  _webGLRenderer: WebGLRenderer;
   _scene: Scene;
   _camera: PerspectiveCamera;
 
   constructor(canvas: HTMLCanvasElement, scene: Scene, camera: PerspectiveCamera) {
     this._scene = scene;
     this._camera = camera;
-    this._renderer = this._CreateRenderer(canvas);
+    this._webGLRenderer = this._CreateRenderer(canvas);
   }
 
   _CreateRenderer(canvas: HTMLCanvasElement) {
@@ -20,8 +20,8 @@ class Renderer {
   /** Render */
   _Render() {
     /** Check if the window has been resized - Update the size of the renderer */
-    if (ResizeRendererToDisplaySize(this._renderer)) SetSize(this._camera, this._renderer);
-    this._renderer.render(this._scene, this._camera);
+    if (ResizeRendererToDisplaySize(this._webGLRenderer)) SetSize(this._camera, this._webGLRenderer);
+    this._webGLRenderer.render(this._scene, this._camera);
   }
 }
 

@@ -1,7 +1,12 @@
 import './style.css';
 
 import { World } from './scripts/World';
-import { StartRenderLoop } from './scripts/systems/RenderLoop';
+import { CreateCube } from './scripts/components/MeshObject';
+import { CreateDirectionalLight } from './scripts/components/Light';
 
 const _world = new World();
-StartRenderLoop(_world._renderer);
+_world._Start();
+
+const cube = CreateCube(0x66dd00);
+_world._MakeMeshObjectInstance(cube); // Create a Cube
+_world._MakeLightInstance(CreateDirectionalLight(0xffffff, 3));
