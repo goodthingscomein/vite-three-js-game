@@ -1,5 +1,6 @@
-import { Clock, PerspectiveCamera, Scene } from 'three';
-import { MeshObject } from '../components/MeshObject';
+import { Clock, Scene } from 'three';
+import { CustomCamera } from '../components/CustomCamera';
+import { Updatable } from '../components/Updatable';
 import { World } from '../World';
 import { Renderer } from './Renderer';
 
@@ -7,17 +8,15 @@ let clock: Clock;
 
 class Loop {
   _world: World;
-  _camera: PerspectiveCamera;
   _scene: Scene;
   _renderer: Renderer;
-  _updatables: MeshObject[];
+  _updatables: Updatable[];
 
-  constructor(world: World, camera: PerspectiveCamera, scene: Scene, renderer: Renderer) {
+  constructor(world: World, camera: CustomCamera, scene: Scene, renderer: Renderer) {
     this._world = world;
-    this._camera = camera;
     this._scene = scene;
     this._renderer = renderer;
-    this._updatables = [];
+    this._updatables = [camera];
 
     clock = new Clock();
   }
@@ -37,8 +36,10 @@ class Loop {
 
   _Tick() {
     const deltaTime = clock.getDelta();
-    for (const obj of this._updatables) {
-      obj._Tick(deltaTime);
+
+    /** Update all of the updatables */
+    for (const updatable of this._updatables) {
+      updatable._Tick(deltaTime);
     }
   }
 }

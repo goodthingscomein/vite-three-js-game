@@ -1,12 +1,12 @@
 import { BoxBufferGeometry, MeshStandardMaterial, ColorRepresentation, Euler } from 'three';
-import { MeshObject } from '../components/MeshObject';
+import { CustomObject } from '../components/CustomObject';
 import { PlayerInput } from '../systems/PlayerInput';
 
 function CreatePlayer(color: ColorRepresentation) {
   /** Create the player model */
   const geometry = new BoxBufferGeometry(1, 2, 1);
   const material = new MeshStandardMaterial({ color });
-  const player = new MeshObject(geometry, material);
+  const player = new CustomObject(geometry, material);
   player._mesh.position.setY(1);
   player._mesh.castShadow = true;
 
@@ -66,7 +66,6 @@ function CreatePlayer(color: ColorRepresentation) {
   playerInput._MMBReleased = () => (mousePressed.MMB = false);
   // Mouse Movement
   playerInput._MouseMove = (e) => {
-    console.log(e.movementX);
     mouseChanged.x = e.movementX;
     mouseChanged.y = e.movementY;
   };
@@ -86,7 +85,10 @@ function CreatePlayer(color: ColorRepresentation) {
     /** Calculate rotation */
     mousePressed.MMB || mousePressed.RMB ? canvas.requestPointerLock() : document.exitPointerLock();
     document.pointerLockElement === canvas ? (mouseLocked = true) : (mouseLocked = false);
-    if (mouseLocked) targetRotation.y -= mouseChanged.x * 0.05 * deltaTime;
+    if (mouseLocked) {
+      targetRotation.y -= mouseChanged.x * 0.05 * deltaTime;
+      mouseChanged.x = 0;
+    }
     player._mesh.rotation.copy(targetRotation);
   };
 

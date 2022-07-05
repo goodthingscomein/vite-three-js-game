@@ -1,4 +1,4 @@
-import { PerspectiveCamera, Scene, Mesh, Light, MathUtils } from 'three';
+import { Scene, Mesh, MathUtils, Vector3 } from 'three';
 
 // Systems
 import { Renderer } from './systems/Renderer';
@@ -6,36 +6,64 @@ import { Loop } from './systems/Loop';
 
 // Components
 import { CreateScene } from './components/Scene';
-import { CreateCamera } from './components/Camera';
-import { MeshObject } from './components/MeshObject';
+import { CustomCamera } from './components/CustomCamera';
+import { CustomObject } from './components/CustomObject';
+
+// Prefabs
+import { CreatePlayer } from './prefabs/Player';
+import { CreateDirectionalLight, CreateAmbientLight, CustomLight } from './components/CustomLight';
+import { CreateGround } from './prefabs/Ground';
+import { CreateSkybox } from './prefabs/Skybox';
 
 let canvas: HTMLCanvasElement;
 let scene: Scene;
-let camera: PerspectiveCamera;
+let customCamera: CustomCamera;
 let renderer: Renderer;
 
 let loop: Loop;
 
-let meshObjects: MeshObject[];
-let lightObjects: Light[];
+let customObjects: CustomObject[];
+let customLights: CustomLight[];
 
 class World {
   constructor() {
     canvas = document.querySelector<HTMLCanvasElement>('#c')!;
     scene = CreateScene(0x222222);
-    camera = CreateCamera();
-    renderer = new Renderer(canvas, scene, camera);
-    loop = new Loop(this, camera, scene, renderer);
-    meshObjects = [];
-    lightObjects = [];
+    customCamera = new CustomCamera();
+    renderer = new Renderer(canvas, scene, customCamera._camera);
+    loop = new Loop(this, customCamera, scene, renderer);
+    customObjects = [];
+    customLights = [];
 
     /** Initialize the world */
     this._Init();
   }
 
   _Init() {
-    camera.position.set(0, 7, -20); // Move the camera backwards
-    camera.rotation.set(MathUtils.degToRad(15), MathUtils.degToRad(180), 0); // Move the camera backwards
+    /** Create the player object */
+    const player = CreatePlayer(0x66dd00);
+    this._MakeMeshObjectInstance(player);
+    customCamera._SetPlayerToFollow(player);
+
+    /** Create the directional light */
+    const directionalLight = CreateDirectionalLight(0xffffff, 4, new Vector3(100, 100, 100));
+    this._MakeLightInstance(directionalLight);
+
+    /** Create the directional light */
+    const ambientLight = CreateAmbientLight(0xffeecc, 1);
+    this._MakeLightInstance(ambientLight);
+
+    /** Create the ground object */
+    const ground = CreateGround();
+    this._MakeInstance(ground);
+
+    /** Create the skybox */
+    const skybox = CreateSkybox();
+    this._MakeInstance(skybox);
+
+    /** Set the camera position */
+    customCamera._camera.position.set(0, 7, -20); // Move the camera backwards
+    customCamera._camera.rotation.set(MathUtils.degToRad(15), MathUtils.degToRad(180), 0); // Move the camera backwards
   }
 
   /** Start the game loop */
@@ -52,19 +80,19 @@ class World {
     scene.add(obj);
   }
 
-  _MakeMeshObjectInstance(obj: MeshObject) {
+  _MakeMeshObjectInstance(obj: CustomObject) {
     scene.add(obj._mesh);
-    meshObjects.push(obj); // Store the mesh
+    customObjects.push(obj); // Store the mesh
     loop._updatables.push(obj);
   }
 
-  _MakeLightInstance(light: Light) {
-    scene.add(light);
-    lightObjects.push(light); // Store the light
+  _MakeLightInstance(light: CustomLight) {
+    scene.add(light._light);
+    customLights.push(light); // Store the light
   }
 
   _GetAllMeshes() {
-    return meshObjects;
+    return customObjects;
   }
 }
 

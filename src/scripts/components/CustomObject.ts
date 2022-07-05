@@ -1,12 +1,13 @@
 import { BufferGeometry, Mesh, Material } from 'three';
+import { Updatable } from './Updatable';
 
-class MeshObject {
+class CustomObject extends Updatable {
   _mesh: Mesh;
+
   constructor(geometry: BufferGeometry, material: Material) {
+    super();
     this._mesh = new Mesh(geometry, material);
   }
-
-  _Tick(deltaTime: number, ...args: any) {}
 }
 
-export { MeshObject };
+export { CustomObject };
