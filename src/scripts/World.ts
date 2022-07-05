@@ -76,7 +76,7 @@ class World {
 
   _Init(data: SetupData) {
     /** Create the player object */
-    const player = CreatePlayer(data.color, data.position, data.rotation);
+    const player = CreatePlayer(networkManager, data.color, data.position, data.rotation);
     this._MakeMeshObjectInstance(player);
     customCamera._SetPlayerToFollow(player);
     this._AddNetworkedObject(data.id, player);

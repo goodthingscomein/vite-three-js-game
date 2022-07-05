@@ -33,10 +33,17 @@ class NetworkManager {
     this._socket.on('players:existing', (data: PlayersExistingData) => this._PlayersExisting(data));
   }
 
+  /** Socket Listener Events */
   _PlayerSetup(data: SetupData) {}
   _PlayerJoined(data: PlayerJoinedData) {}
   _PlayerLeft(data: SetupData) {}
   _PlayersExisting(data: PlayersExistingData) {}
+
+  /** Socket Emit Events */
+  _SendTransform(position: Vector3, rotation: Euler) {
+    if (!this._socket) return;
+    this._socket.emit('player:transform', { position, rotation });
+  }
 }
 
 export { NetworkManager };

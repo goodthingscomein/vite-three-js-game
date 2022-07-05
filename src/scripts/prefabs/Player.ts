@@ -1,8 +1,9 @@
 import { BoxBufferGeometry, MeshStandardMaterial, ColorRepresentation, Euler, Vector3, Object3D } from 'three';
 import { CustomObject } from '../components/CustomObject';
+import { NetworkManager } from '../systems/NetworkManager';
 import { PlayerInput } from '../systems/PlayerInput';
 
-function CreatePlayer(color: ColorRepresentation, startPos: Vector3, startRot: Euler) {
+function CreatePlayer(networkManager: NetworkManager, color: ColorRepresentation, startPos: Vector3, startRot: Euler) {
   /** Create the player model */
   const geometry = new BoxBufferGeometry(1, 2, 1);
   const material = new MeshStandardMaterial({ color });
@@ -96,6 +97,9 @@ function CreatePlayer(color: ColorRepresentation, startPos: Vector3, startRot: E
       mouseChanged.x = 0;
     }
     player._mesh.quaternion.slerp(targetTransform.quaternion, 0.35);
+
+    /** Send new transform to the server */
+    networkManager._SendTransform(player._mesh.position, player._mesh.rotation);
   };
 
   return player;
