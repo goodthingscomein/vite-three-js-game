@@ -1,13 +1,14 @@
-import { BoxBufferGeometry, MeshStandardMaterial, ColorRepresentation, Euler } from 'three';
+import { BoxBufferGeometry, MeshStandardMaterial, ColorRepresentation, Euler, Vector3, Object3D } from 'three';
 import { CustomObject } from '../components/CustomObject';
 import { PlayerInput } from '../systems/PlayerInput';
 
-function CreatePlayer(color: ColorRepresentation) {
+function CreatePlayer(color: ColorRepresentation, startPos: Vector3, startRot: Euler) {
   /** Create the player model */
   const geometry = new BoxBufferGeometry(1, 2, 1);
   const material = new MeshStandardMaterial({ color });
   const player = new CustomObject(geometry, material);
-  player._mesh.position.setY(1);
+  player._mesh.position.copy(startPos);
+  player._mesh.rotation.copy(startRot);
   player._mesh.castShadow = true;
 
   /** Store the player input */
@@ -37,8 +38,12 @@ function CreatePlayer(color: ColorRepresentation) {
   document.exitPointerLock = document.exitPointerLock;
 
   /** Create the target pos + rot */
+  let targetTransform = new Object3D();
+  targetTransform.position.copy(startPos); // Setup start position
+  targetTransform.rotation.copy(startRot); // Setup start rotation
+
+  /** Movement variables */
   const moveSpeed = 5;
-  let targetRotation = new Euler(0, 0, 0);
 
   /** Create the player input object */
   const playerInput = new PlayerInput();
@@ -77,19 +82,20 @@ function CreatePlayer(color: ColorRepresentation) {
     else movingForward = false;
 
     /** Calculate movement */
-    if (movingForward) player._mesh.translateZ(moveSpeed * deltaTime);
-    if (keysPressed.S) player._mesh.translateZ(-moveSpeed * deltaTime);
-    if (keysPressed.A) player._mesh.translateX(moveSpeed * deltaTime);
-    if (keysPressed.D) player._mesh.translateX(-moveSpeed * deltaTime);
+    if (movingForward) targetTransform.translateZ(moveSpeed * deltaTime);
+    if (keysPressed.S) targetTransform.translateZ(-moveSpeed * deltaTime);
+    if (keysPressed.A) targetTransform.translateX(moveSpeed * deltaTime);
+    if (keysPressed.D) targetTransform.translateX(-moveSpeed * deltaTime);
+    player._mesh.position.lerp(targetTransform.position, 0.2);
 
     /** Calculate rotation */
     mousePressed.MMB || mousePressed.RMB ? canvas.requestPointerLock() : document.exitPointerLock();
     document.pointerLockElement === canvas ? (mouseLocked = true) : (mouseLocked = false);
     if (mouseLocked) {
-      targetRotation.y -= mouseChanged.x * 0.05 * deltaTime;
+      targetTransform.rotation.y -= mouseChanged.x * 0.05 * deltaTime;
       mouseChanged.x = 0;
     }
-    player._mesh.rotation.copy(targetRotation);
+    player._mesh.quaternion.slerp(targetTransform.quaternion, 0.35);
   };
 
   return player;

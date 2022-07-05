@@ -1,8 +1,8 @@
-import { BoxGeometry, Mesh, MeshBasicMaterial, BackSide, TextureLoader } from 'three';
+import { BoxBufferGeometry, Mesh, MeshBasicMaterial, BackSide, TextureLoader } from 'three';
 
 function CreateSkybox() {
   const skyboxMaterialArray = CreateMaterialArray('skybox');
-  const skyboxGeometry = new BoxGeometry(2000, 2000, 2000);
+  const skyboxGeometry = new BoxBufferGeometry(2000, 2000, 2000);
   const skybox = new Mesh(skyboxGeometry, skyboxMaterialArray);
   skybox.castShadow = false;
   skybox.receiveShadow = false;
