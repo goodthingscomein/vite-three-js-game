@@ -31,6 +31,7 @@ class NetworkManager {
     this._socket.on('me:setup', (data: SetupData) => this._PlayerSetup(data));
     this._socket.on('player:joined', (data: PlayerJoinedData) => this._PlayerJoined(data));
     this._socket.on('players:existing', (data: PlayersExistingData) => this._PlayersExisting(data));
+    this._socket.on('player:transform', (data: TransformChangeData) => this._TransformChange(data));
   }
 
   /** Socket Listener Events */
@@ -38,6 +39,7 @@ class NetworkManager {
   _PlayerJoined(data: PlayerJoinedData) {}
   _PlayerLeft(data: SetupData) {}
   _PlayersExisting(data: PlayersExistingData) {}
+  _TransformChange(data: TransformChangeData) {}
 
   /** Socket Emit Events */
   _SendTransform(position: Vector3, rotation: Euler) {
@@ -70,3 +72,9 @@ type PlayerData = {
 };
 type ExistingPlayer = [id: number, data: PlayerData];
 export type PlayersExistingData = ExistingPlayer[];
+
+type TransformChangeData = {
+  id: number;
+  position: Vector3;
+  rotation: Euler;
+};

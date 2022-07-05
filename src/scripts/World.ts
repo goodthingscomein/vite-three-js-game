@@ -25,6 +25,7 @@ let renderer: Renderer;
 
 let loop: Loop;
 
+let ourPlayerID: number;
 let networkedObjects: Map<number, CustomObject>;
 let networkedLights: Map<number, CustomLight>;
 
@@ -72,6 +73,15 @@ class World {
         this._AddNetworkedObject(id, newPlayer);
       }
     };
+
+    /** Handle other player transform changes */
+    networkManager._TransformChange = (data) => {
+      if (data.id === ourPlayerID) return; // Do not move our own player
+      const objectToMove = networkedObjects.get(data.id);
+      if (!objectToMove) return; // Object does not exist in our world with this ID
+      objectToMove._mesh.position.copy(data.position);
+      objectToMove._mesh.rotation.copy(data.rotation);
+    };
   }
 
   _Init(data: SetupData) {
@@ -80,6 +90,7 @@ class World {
     this._MakeMeshObjectInstance(player);
     customCamera._SetPlayerToFollow(player);
     this._AddNetworkedObject(data.id, player);
+    ourPlayerID = data.id;
 
     /** Create the directional light */
     const directionalLight = CreateDirectionalLight(0xffffff, 4, new Vector3(100, 100, 100));
