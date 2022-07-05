@@ -29,9 +29,14 @@ class NetworkManager {
   private _AddSocketListeners() {
     if (!this._socket) return;
     this._socket.on('me:setup', (data: SetupData) => this._PlayerSetup(data));
+    this._socket.on('player:joined', (data: PlayerJoinedData) => this._PlayerJoined(data));
+    this._socket.on('players:existing', (data: PlayersExistingData) => this._PlayersExisting(data));
   }
 
   _PlayerSetup(data: SetupData) {}
+  _PlayerJoined(data: PlayerJoinedData) {}
+  _PlayerLeft(data: SetupData) {}
+  _PlayersExisting(data: PlayersExistingData) {}
 }
 
 export { NetworkManager };
@@ -43,3 +48,18 @@ export type SetupData = {
   position: Vector3;
   rotation: Euler;
 };
+
+export type PlayerJoinedData = {
+  id: number;
+  color: ColorRepresentation;
+  position: Vector3;
+  rotation: Euler;
+};
+
+type PlayerData = {
+  color: ColorRepresentation;
+  position: Vector3;
+  rotation: Euler;
+};
+type ExistingPlayer = [id: number, data: PlayerData];
+export type PlayersExistingData = ExistingPlayer[];

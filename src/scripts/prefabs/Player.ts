@@ -101,4 +101,16 @@ function CreatePlayer(color: ColorRepresentation, startPos: Vector3, startRot: E
   return player;
 }
 
-export { CreatePlayer };
+function CreateOtherPlayer(color: ColorRepresentation, startPos: Vector3, startRot: Euler) {
+  /** Create the player model */
+  const geometry = new BoxBufferGeometry(1, 2, 1);
+  const material = new MeshStandardMaterial({ color });
+  const otherPlayer = new CustomObject(geometry, material);
+  otherPlayer._mesh.position.copy(startPos);
+  otherPlayer._mesh.rotation.copy(startRot);
+  otherPlayer._mesh.castShadow = true;
+
+  return otherPlayer;
+}
+
+export { CreatePlayer, CreateOtherPlayer };

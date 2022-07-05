@@ -10,7 +10,7 @@ import { CustomCamera } from './components/CustomCamera';
 import { CustomObject } from './components/CustomObject';
 
 // Prefabs
-import { CreatePlayer } from './prefabs/Player';
+import { CreateOtherPlayer, CreatePlayer } from './prefabs/Player';
 import { CreateDirectionalLight, CreateAmbientLight, CustomLight } from './components/CustomLight';
 import { CreateGround } from './prefabs/Ground';
 import { CreateSkybox } from './prefabs/Skybox';
@@ -45,6 +45,32 @@ class World {
     networkManager._PlayerSetup = (data) => {
       /** Initialize the world */
       this._Init(data);
+    };
+
+    /** Handle new players joining */
+    networkManager._PlayerJoined = (data) => {
+      if (networkedObjects.has(data.id)) return; // If we have already added this player, do not create them again...
+      const newPlayer = CreateOtherPlayer(data.color, data.position, data.rotation);
+      this._MakeMeshObjectInstance(newPlayer);
+      this._AddNetworkedObject(data.id, newPlayer);
+    };
+
+    /** Handle loading existing players */
+    networkManager._PlayersExisting = (data) => {
+      if (!data.length) return;
+
+      for (let i = 0; i < data.length; i++) {
+        // Get the data of this player
+        const id = data[i][0];
+        const playerData = data[i][1];
+
+        if (networkedObjects.has(id)) continue; // If we have already added this player, do not create them again...
+
+        // Create a new player for this existing player in the world
+        const newPlayer = CreateOtherPlayer(playerData.color, playerData.position, playerData.rotation);
+        this._MakeMeshObjectInstance(newPlayer);
+        this._AddNetworkedObject(id, newPlayer);
+      }
     };
   }
 

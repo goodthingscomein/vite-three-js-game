@@ -44,7 +44,7 @@ class CustomCamera extends Updatable {
 
 function calculateIdealPosition() {
   if (!player) return;
-  const idealOffset = new Vector3(0, 5, -20);
+  const idealOffset = new Vector3(0, 4, -20);
   idealOffset.applyQuaternion(player._mesh.quaternion);
   idealOffset.add(player._mesh.position);
 
@@ -53,7 +53,7 @@ function calculateIdealPosition() {
 }
 function calculateIdealLookAt() {
   if (!player) return;
-  const idealLookat = new Vector3(0, 0, 10);
+  const idealLookat = new Vector3(0, 0, 7);
   idealLookat.applyQuaternion(player._mesh.quaternion);
   idealLookat.add(player._mesh.position);
 
