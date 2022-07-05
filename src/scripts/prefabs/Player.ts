@@ -7,9 +7,7 @@ function CreatePlayer(networkManager: NetworkManager, color: ColorRepresentation
   /** Create the player model */
   const geometry = new BoxBufferGeometry(1, 2, 1);
   const material = new MeshStandardMaterial({ color });
-  const player = new CustomObject(geometry, material);
-  player._mesh.position.copy(startPos);
-  player._mesh.rotation.copy(startRot);
+  const player = new CustomObject(geometry, material, startPos, startRot);
   player._mesh.castShadow = true;
 
   /** Store the player input */
@@ -37,11 +35,6 @@ function CreatePlayer(networkManager: NetworkManager, color: ColorRepresentation
   const canvas = document.querySelector<HTMLCanvasElement>('#c')!;
   canvas.requestPointerLock = canvas.requestPointerLock;
   document.exitPointerLock = document.exitPointerLock;
-
-  /** Create the target pos + rot */
-  let targetTransform = new Object3D();
-  targetTransform.position.copy(startPos); // Setup start position
-  targetTransform.rotation.copy(startRot); // Setup start rotation
 
   /** Movement variables */
   const moveSpeed = 5;
@@ -77,26 +70,26 @@ function CreatePlayer(networkManager: NetworkManager, color: ColorRepresentation
   };
 
   /** Player Loop */
-  player._Tick = (deltaTime: number) => {
+  player._Tick = (deltaTime) => {
     /** Calculate if the player is trying to walk forward */
     if (keysPressed.W || mousePressed.MMB || (mousePressed.LMB && mousePressed.RMB)) movingForward = true;
     else movingForward = false;
 
     /** Calculate movement */
-    if (movingForward) targetTransform.translateZ(moveSpeed * deltaTime);
-    if (keysPressed.S) targetTransform.translateZ(-moveSpeed * deltaTime);
-    if (keysPressed.A) targetTransform.translateX(moveSpeed * deltaTime);
-    if (keysPressed.D) targetTransform.translateX(-moveSpeed * deltaTime);
-    player._mesh.position.lerp(targetTransform.position, 0.2);
+    if (movingForward) player._targetTransform.translateZ(moveSpeed * deltaTime);
+    if (keysPressed.S) player._targetTransform.translateZ(-moveSpeed * deltaTime);
+    if (keysPressed.A) player._targetTransform.translateX(moveSpeed * deltaTime);
+    if (keysPressed.D) player._targetTransform.translateX(-moveSpeed * deltaTime);
+    player._mesh.position.lerp(player._targetTransform.position, 0.2);
 
     /** Calculate rotation */
     mousePressed.MMB || mousePressed.RMB ? canvas.requestPointerLock() : document.exitPointerLock();
     document.pointerLockElement === canvas ? (mouseLocked = true) : (mouseLocked = false);
     if (mouseLocked) {
-      targetTransform.rotation.y -= mouseChanged.x * 0.05 * deltaTime;
+      player._targetTransform.rotation.y -= mouseChanged.x * 0.05 * deltaTime;
       mouseChanged.x = 0;
     }
-    player._mesh.quaternion.slerp(targetTransform.quaternion, 0.35);
+    player._mesh.quaternion.slerp(player._targetTransform.quaternion, 0.35);
 
     /** Send new transform to the server */
     networkManager._SendTransform(player._mesh.position, player._mesh.rotation);
@@ -109,10 +102,13 @@ function CreateOtherPlayer(color: ColorRepresentation, startPos: Vector3, startR
   /** Create the player model */
   const geometry = new BoxBufferGeometry(1, 2, 1);
   const material = new MeshStandardMaterial({ color });
-  const otherPlayer = new CustomObject(geometry, material);
-  otherPlayer._mesh.position.copy(startPos);
-  otherPlayer._mesh.rotation.copy(startRot);
+  const otherPlayer = new CustomObject(geometry, material, startPos, startRot);
   otherPlayer._mesh.castShadow = true;
+
+  otherPlayer._Tick = (deltaTime) => {
+    otherPlayer._mesh.position.lerp(otherPlayer._targetTransform.position, 0.2);
+    otherPlayer._mesh.quaternion.slerp(otherPlayer._targetTransform.quaternion, 0.45);
+  };
 
   return otherPlayer;
 }

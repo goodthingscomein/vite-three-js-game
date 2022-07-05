@@ -1,4 +1,4 @@
-import { PerspectiveCamera, Vector3 } from 'three';
+import { Object3D, PerspectiveCamera, Vector3 } from 'three';
 import { CustomObject } from './CustomObject';
 import { Updatable } from './Updatable';
 
@@ -16,7 +16,7 @@ class CustomCamera extends Updatable {
   _camera: PerspectiveCamera;
 
   constructor() {
-    super();
+    super(new Object3D());
     this._fov = 35; // AKA Field of View
     this._aspect = 1;
     this._near = 0.1; // the near clipping plane

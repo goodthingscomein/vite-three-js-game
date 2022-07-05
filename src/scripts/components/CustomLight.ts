@@ -1,11 +1,11 @@
-import { DirectionalLight, AmbientLight, ColorRepresentation, Vector3, Euler, Light } from 'three';
+import { DirectionalLight, AmbientLight, ColorRepresentation, Vector3, Euler, Light, Object3D } from 'three';
 import { Updatable } from './Updatable';
 
 class CustomLight extends Updatable {
   _light: Light;
 
   constructor(light: Light) {
-    super();
+    super(new Object3D());
     this._light = light;
   }
 }

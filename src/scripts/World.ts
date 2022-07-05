@@ -79,8 +79,8 @@ class World {
       if (data.id === ourPlayerID) return; // Do not move our own player
       const objectToMove = networkedObjects.get(data.id);
       if (!objectToMove) return; // Object does not exist in our world with this ID
-      objectToMove._mesh.position.copy(data.position);
-      objectToMove._mesh.rotation.copy(data.rotation);
+      objectToMove._targetTransform.position.copy(data.position);
+      objectToMove._targetTransform.rotation.copy(data.rotation);
     };
   }
 
