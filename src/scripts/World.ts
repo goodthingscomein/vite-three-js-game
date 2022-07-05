@@ -14,6 +14,9 @@ import { CreatePlayer } from './prefabs/Player';
 import { CreateDirectionalLight, CreateAmbientLight, CustomLight } from './components/CustomLight';
 import { CreateGround } from './prefabs/Ground';
 import { CreateSkybox } from './prefabs/Skybox';
+import { NetworkManager, SetupData } from './systems/NetworkManager';
+
+let networkManager: NetworkManager;
 
 let canvas: HTMLCanvasElement;
 let scene: Scene;
@@ -22,8 +25,8 @@ let renderer: Renderer;
 
 let loop: Loop;
 
-let customObjects: CustomObject[];
-let customLights: CustomLight[];
+let networkedObjects: Map<number, CustomObject>;
+let networkedLights: Map<number, CustomLight>;
 
 class World {
   constructor() {
@@ -32,24 +35,33 @@ class World {
     customCamera = new CustomCamera();
     renderer = new Renderer(canvas, scene, customCamera._camera);
     loop = new Loop(this, customCamera, scene, renderer);
-    customObjects = [];
-    customLights = [];
+    networkedObjects = new Map<number, CustomObject>();
+    networkedLights = new Map<number, CustomLight>();
 
-    /** Initialize the world */
-    this._Init();
+    /** Connect to the server */
+    networkManager = new NetworkManager('http://localhost:4000');
+
+    /** Listen for the setup message from the server */
+    networkManager._PlayerSetup = (data) => {
+      /** Initialize the world */
+      this._Init(data);
+    };
   }
 
-  _Init() {
+  _Init(data: SetupData) {
     /** Create the player object */
-    const player = CreatePlayer(0x66dd00);
+    const player = CreatePlayer(data.color);
+    player._mesh.position.copy(data.position);
+    player._mesh.rotation.copy(data.rotation);
     this._MakeMeshObjectInstance(player);
     customCamera._SetPlayerToFollow(player);
+    this._AddNetworkedObject(data.id, player);
 
     /** Create the directional light */
     const directionalLight = CreateDirectionalLight(0xffffff, 4, new Vector3(100, 100, 100));
     this._MakeLightInstance(directionalLight);
 
-    /** Create the directional light */
+    /** Create the ambient light */
     const ambientLight = CreateAmbientLight(0xffeecc, 1);
     this._MakeLightInstance(ambientLight);
 
@@ -82,17 +94,21 @@ class World {
 
   _MakeMeshObjectInstance(obj: CustomObject) {
     scene.add(obj._mesh);
-    customObjects.push(obj); // Store the mesh
     loop._updatables.push(obj);
   }
 
   _MakeLightInstance(light: CustomLight) {
     scene.add(light._light);
-    customLights.push(light); // Store the light
   }
 
-  _GetAllMeshes() {
-    return customObjects;
+  /** Set networked objects in map */
+  _AddNetworkedObject(id: number, obj: CustomObject) {
+    networkedObjects.set(id, obj);
+  }
+
+  /** Set networked lights in map */
+  _AddNetworkedLight(id: number, light: CustomLight) {
+    networkedLights.set(id, light);
   }
 }
 
