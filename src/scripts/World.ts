@@ -40,7 +40,7 @@ class World {
     networkedLights = new Map<number, CustomLight>();
 
     /** Connect to the server */
-    networkManager = new NetworkManager('http://localhost:4000');
+    networkManager = new NetworkManager('http://localhost:4000', 'Jai Colio', 'Warrior');
 
     /** Listen for the setup message from the server */
     networkManager._PlayerSetup = (data) => {
@@ -51,7 +51,7 @@ class World {
     /** Handle new players joining */
     networkManager._PlayerJoined = (data) => {
       if (networkedObjects.has(data.id)) return; // If we have already added this player, do not create them again...
-      const newPlayer = CreateOtherPlayer(data.color, data.position, data.rotation);
+      const newPlayer = CreateOtherPlayer(data.playerName, data.playerClass, data.color, data.position, data.rotation);
       this._MakeMeshObjectInstance(newPlayer);
       this._AddNetworkedObject(data.id, newPlayer);
     };
@@ -68,7 +68,13 @@ class World {
         if (networkedObjects.has(id)) continue; // If we have already added this player, do not create them again...
 
         // Create a new player for this existing player in the world
-        const newPlayer = CreateOtherPlayer(playerData.color, playerData.position, playerData.rotation);
+        const newPlayer = CreateOtherPlayer(
+          playerData.playerName,
+          playerData.playerClass,
+          playerData.color,
+          playerData.position,
+          playerData.rotation
+        );
         this._MakeMeshObjectInstance(newPlayer);
         this._AddNetworkedObject(id, newPlayer);
       }
@@ -86,7 +92,14 @@ class World {
 
   _Init(data: SetupData) {
     /** Create the player object */
-    const player = CreatePlayer(networkManager, data.color, data.position, data.rotation);
+    const player = CreatePlayer(
+      networkManager,
+      data.playerName,
+      data.playerClass,
+      data.color,
+      data.position,
+      data.rotation
+    );
     this._MakeMeshObjectInstance(player);
     customCamera._SetPlayerToFollow(player);
     this._AddNetworkedObject(data.id, player);

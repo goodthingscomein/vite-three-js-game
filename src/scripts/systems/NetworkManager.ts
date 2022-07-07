@@ -5,15 +5,22 @@ import { Connect } from '../../services/socket';
 class NetworkManager {
   _socket: Socket | undefined;
 
-  constructor(url: string) {
-    this._Connect(url);
+  constructor(url: string, playerName: string, playerClass: string) {
+    this._Connect(url, playerName, playerClass);
   }
 
   /** Connect to server */
-  _Connect(url: string) {
-    /** Connect to the server using the socket */
-    if (this._socket) this._socket.connect(); // Reconnect
-    else this._socket = Connect(url); // Connect for first time
+  _Connect(url: string, playerName: string, playerClass: string) {
+    this._socket = Connect(url, playerName, playerClass); // Connect for first time
+
+    /** Add all of the socket listeners */
+    this._AddSocketListeners();
+  }
+
+  /** Reconnect to server */
+  _Reconnect() {
+    if (!this._socket) return;
+    this._socket.connect(); // Reconnect
 
     /** Add all of the socket listeners */
     this._AddSocketListeners();
@@ -53,6 +60,8 @@ export { NetworkManager };
 /** Data Types */
 export type SetupData = {
   id: number;
+  playerName: string;
+  playerClass: string;
   color: ColorRepresentation;
   position: Vector3;
   rotation: Euler;
@@ -60,12 +69,16 @@ export type SetupData = {
 
 export type PlayerJoinedData = {
   id: number;
+  playerName: string;
+  playerClass: string;
   color: ColorRepresentation;
   position: Vector3;
   rotation: Euler;
 };
 
 type PlayerData = {
+  playerName: string;
+  playerClass: string;
   color: ColorRepresentation;
   position: Vector3;
   rotation: Euler;

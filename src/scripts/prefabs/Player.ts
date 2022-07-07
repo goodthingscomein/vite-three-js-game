@@ -1,14 +1,43 @@
-import { BoxBufferGeometry, MeshStandardMaterial, ColorRepresentation, Euler, Vector3, Object3D } from 'three';
+import { BoxBufferGeometry, MeshStandardMaterial, ColorRepresentation, Euler, Vector3, Material } from 'three';
 import { CustomObject } from '../components/CustomObject';
 import { NetworkManager } from '../systems/NetworkManager';
 import { PlayerInput } from '../systems/PlayerInput';
 
-function CreatePlayer(networkManager: NetworkManager, color: ColorRepresentation, startPos: Vector3, startRot: Euler) {
+class Player extends CustomObject {
+  _controllable: boolean;
+  _playerName: string;
+  _playerClass: string;
+
+  constructor(
+    geometry: BoxBufferGeometry,
+    material: Material,
+    position: Vector3,
+    rotation: Euler,
+    isControllable: boolean,
+    playerName: string,
+    playerClass: string
+  ) {
+    super(geometry, material, position, rotation);
+    this._controllable = isControllable;
+    this._playerName = playerName;
+    this._playerClass = playerClass;
+  }
+}
+
+function CreatePlayer(
+  networkManager: NetworkManager,
+  playerName: string,
+  playerClass: string,
+  color: ColorRepresentation,
+  startPos: Vector3,
+  startRot: Euler
+) {
   /** Create the player model */
   const geometry = new BoxBufferGeometry(1, 2, 1);
   const material = new MeshStandardMaterial({ color });
-  const player = new CustomObject(geometry, material, startPos, startRot);
+  const player = new Player(geometry, material, startPos, startRot, true, playerName, playerClass);
   player._mesh.castShadow = true;
+  console.log('Our player: ' + player._playerName);
 
   /** Store the player input */
   const keysPressed = {
@@ -98,12 +127,20 @@ function CreatePlayer(networkManager: NetworkManager, color: ColorRepresentation
   return player;
 }
 
-function CreateOtherPlayer(color: ColorRepresentation, startPos: Vector3, startRot: Euler) {
+function CreateOtherPlayer(
+  playerName: string,
+  playerClass: string,
+  color: ColorRepresentation,
+  startPos: Vector3,
+  startRot: Euler
+) {
   /** Create the player model */
   const geometry = new BoxBufferGeometry(1, 2, 1);
   const material = new MeshStandardMaterial({ color });
-  const otherPlayer = new CustomObject(geometry, material, startPos, startRot);
+  const otherPlayer = new Player(geometry, material, startPos, startRot, false, playerName, playerClass);
   otherPlayer._mesh.castShadow = true;
+
+  console.log('other player: ' + otherPlayer._playerName);
 
   otherPlayer._Tick = (deltaTime) => {
     otherPlayer._mesh.position.lerp(otherPlayer._targetTransform.position, 0.2);
@@ -113,4 +150,4 @@ function CreateOtherPlayer(color: ColorRepresentation, startPos: Vector3, startR
   return otherPlayer;
 }
 
-export { CreatePlayer, CreateOtherPlayer };
+export { Player, CreatePlayer, CreateOtherPlayer };
