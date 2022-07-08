@@ -1,6 +1,6 @@
 import './style.css';
 
-import { World } from './scripts/World';
+import { World } from './game/World';
 
 const loginForm = document.getElementById('login-form');
 loginForm?.addEventListener('submit', (e) => {
@@ -12,7 +12,7 @@ loginForm?.addEventListener('submit', (e) => {
   const _world = new World(playerNameInput.value, playerClassInput.value);
   _world._Start(); // This will start the game loop
 
-  const loginScreen = document.getElementById('login-screen');
+  const loginScreen = document.getElementById('gui');
   if (loginScreen) loginScreen.style.display = 'none';
 });
 
