@@ -12,8 +12,13 @@ loginForm?.addEventListener('submit', (e) => {
   const _world = new World(playerNameInput.value, playerClassInput.value);
   _world._Start(); // This will start the game loop
 
-  const loginScreen = document.getElementById('gui');
+  /** Hide the login screen */
+  const loginScreen = document.getElementById('login-screen');
   if (loginScreen) loginScreen.style.display = 'none';
+
+  /** Unhide the GUI */
+  const gui = document.getElementById('gui');
+  if (gui) gui.style.display = 'flex';
 });
 
 /** Prevent the context menu */

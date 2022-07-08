@@ -8,8 +8,9 @@
     <title>Game | Vite</title>
   </head>
   <body>
-    <div class="relative w-full h-screen bg-black z-0">
-      <div class="absolute inset-0 flex flex-col z-10" id="gui">
+    <div class="relative w-full h-screen bg-[#222] z-0">
+      <!-- Login Screen -->
+      <div id="login-screen" class="absolute inset-0 flex flex-col z-10" style="display: flex">
         <div class="m-auto w-1/3 h-fit px-6 py-10 bg-white rounded flex flex-col">
           <h1 class="mb-16 text-3xl font-semibold">Login</h1>
           <form class="w-full flex flex-col" id="login-form">
@@ -41,6 +42,24 @@
           </form>
         </div>
       </div>
+      <div id="gui" class="absolute inset-0 flex flex-col z-10 px-4" style="display: none">
+        <span class="w-full flex">
+          <button class="px-3 h-8 bg-red-800 text-white font-semibold rounded">Top Left</button>
+          <button class="mx-auto px-3 h-8 bg-red-800 text-white font-semibold rounded">Top Center</button>
+          <button class="px-3 h-8 bg-red-800 text-white font-semibold rounded">Top Right</button>
+        </span>
+        <span class="my-auto w-full flex">
+          <button class="px-3 h-8 bg-red-800 text-white font-semibold rounded">Middle Left</button>
+          <button class="mx-auto px-3 h-8 bg-red-800 text-white font-semibold rounded">Middle Center</button>
+          <button class="px-3 h-8 bg-red-800 text-white font-semibold rounded">Middle Right</button>
+        </span>
+        <span class="w-full flex">
+          <button class="px-3 h-8 bg-red-800 text-white font-semibold rounded">Bottom Left</button>
+          <button class="mx-auto px-3 h-8 bg-red-800 text-white font-semibold rounded">Bottom Center</button>
+          <button class="px-3 h-8 bg-red-800 text-white font-semibold rounded">Bottom Right</button>
+        </span>
+      </div>
+      <!-- Game Canvas -->
       <canvas id="c"></canvas>
     </div>
     <script type="module" src="/src/index.ts"></script>
