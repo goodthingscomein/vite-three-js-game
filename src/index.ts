@@ -17,8 +17,8 @@ loginForm?.addEventListener('submit', (e) => {
   if (loginScreen) loginScreen.style.display = 'none';
 
   /** Unhide the GUI */
-  const gui = document.getElementById('gui');
-  if (gui) gui.style.display = 'flex';
+  // const gui = document.getElementById('gui');
+  // if (gui) gui.style.display = 'flex';
 });
 
 /** Prevent the context menu */
