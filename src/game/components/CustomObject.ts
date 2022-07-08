@@ -50,7 +50,10 @@ class CustomObject extends Updatable {
     this._activeAnimation.fadeIn(0.2);
     this._activeAnimation.play();
     this._activeAnimationIndex = index;
+    this._AnimationChanged(index);
   }
+
+  _AnimationChanged(index: number) {}
 }
 
 export { CustomObject };

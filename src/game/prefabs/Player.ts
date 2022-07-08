@@ -94,6 +94,9 @@ function CreatePlayer(
     mouseChanged.y = e.movementY;
   };
 
+  /** Setup our on animation change listener */
+  player._AnimationChanged = (index) => networkManager._SendAnimation(index);
+
   /** Player Loop */
   player._Tick = (deltaTime) => {
     if (!player._mesh || !player._mixer) return;
@@ -107,7 +110,7 @@ function CreatePlayer(
     if (keysPressed.S) player._targetTransform.translateZ(-moveSpeed * deltaTime);
     if (keysPressed.A) player._targetTransform.translateX(moveSpeed * deltaTime);
     if (keysPressed.D) player._targetTransform.translateX(-moveSpeed * deltaTime);
-    player._mesh.position.lerp(player._targetTransform.position, 0.2);
+    player._mesh.position.lerp(player._targetTransform.position, 0.3);
 
     /** Calculate rotation */
     mousePressed.MMB || mousePressed.RMB ? canvas.requestPointerLock() : document.exitPointerLock();
@@ -150,8 +153,11 @@ function CreateOtherPlayer(
 
   otherPlayer._Tick = (deltaTime) => {
     if (!otherPlayer._mesh) return;
-    otherPlayer._mesh.position.lerp(otherPlayer._targetTransform.position, 0.2);
+    otherPlayer._mesh.position.lerp(otherPlayer._targetTransform.position, 0.4);
     otherPlayer._mesh.quaternion.slerp(otherPlayer._targetTransform.quaternion, 0.45);
+
+    /** Animate the other player */
+    otherPlayer._mixer.update(deltaTime);
   };
 
   return otherPlayer;

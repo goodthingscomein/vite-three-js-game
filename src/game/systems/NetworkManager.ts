@@ -39,6 +39,7 @@ class NetworkManager {
     this._socket.on('player:joined', (data: PlayerJoinedData) => this._PlayerJoined(data));
     this._socket.on('players:existing', (data: PlayersExistingData) => this._PlayersExisting(data));
     this._socket.on('player:transform', (data: TransformChangeData) => this._TransformChange(data));
+    this._socket.on('player:animation', (data: AnimationChangeData) => this._AnimationChange(data));
   }
 
   /** Socket Listener Events */
@@ -47,11 +48,17 @@ class NetworkManager {
   _PlayerLeft(data: SetupData) {}
   _PlayersExisting(data: PlayersExistingData) {}
   _TransformChange(data: TransformChangeData) {}
+  _AnimationChange(data: AnimationChangeData) {}
 
   /** Socket Emit Events */
   _SendTransform(position: Vector3, rotation: Euler) {
     if (!this._socket) return;
     this._socket.emit('player:transform', { position, rotation });
+  }
+
+  _SendAnimation(index: number) {
+    if (!this._socket) return;
+    this._socket.emit('player:animation', index);
   }
 }
 
@@ -90,4 +97,9 @@ type TransformChangeData = {
   id: number;
   position: Vector3;
   rotation: Euler;
+};
+
+type AnimationChangeData = {
+  id: number;
+  index: number;
 };

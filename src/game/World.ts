@@ -95,6 +95,14 @@ class World {
       objectToMove._targetTransform.position.copy(data.position);
       objectToMove._targetTransform.rotation.copy(data.rotation);
     };
+
+    /** Handle other player animation changes */
+    networkManager._AnimationChange = (data) => {
+      if (data.id === ourPlayerID) return; // Do not change animation of our own player
+      const objectToAnimate = networkedObjects.get(data.id);
+      if (!objectToAnimate) return; // Object does not exist in our world with this ID
+      objectToAnimate._SetAnimation(data.index);
+    };
   }
 
   _Init(data: SetupData) {
