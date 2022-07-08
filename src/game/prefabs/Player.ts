@@ -16,7 +16,7 @@ class Player extends CustomObject {
     playerName: string,
     playerClass: string
   ) {
-    super('player', 'player', position, rotation, onLoadCallback);
+    super('player', 'player', ['idle', 'run-f', 'run-b', 'run-l', 'run-r'], position, rotation, onLoadCallback);
     this._controllable = isControllable;
     this._playerName = playerName;
     this._playerClass = playerClass;
@@ -121,8 +121,15 @@ function CreatePlayer(
     /** Send new transform to the server */
     networkManager._SendTransform(player._mesh.position, player._mesh.rotation);
 
-    /** Update the animations */
+    /** Calculate animations */
     player._animations[0].play();
+    if (keysPressed.A && !keysPressed.D) player._SetAnimation(3);
+    else if (!keysPressed.A && keysPressed.D) player._SetAnimation(4);
+    else if (movingForward && !keysPressed.S) player._SetAnimation(1);
+    else if (!movingForward && keysPressed.S) player._SetAnimation(2);
+    else player._SetAnimation(0);
+
+    /** Update the animations */
     player._mixer.update(deltaTime);
   };
 
