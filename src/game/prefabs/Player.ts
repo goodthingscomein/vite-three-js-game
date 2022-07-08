@@ -9,8 +9,6 @@ class Player extends CustomObject {
   _playerClass: string;
 
   constructor(
-    modelPath: string,
-    modelFile: string,
     onLoadCallback: () => void,
     position: Vector3,
     rotation: Euler,
@@ -18,7 +16,7 @@ class Player extends CustomObject {
     playerName: string,
     playerClass: string
   ) {
-    super(modelPath, modelFile, position, rotation, onLoadCallback);
+    super('player', 'player', position, rotation, onLoadCallback);
     this._controllable = isControllable;
     this._playerName = playerName;
     this._playerClass = playerClass;
@@ -27,8 +25,6 @@ class Player extends CustomObject {
 
 function CreatePlayer(
   networkManager: NetworkManager,
-  modelPath: string,
-  modelFile: string,
   onLoadCallback: () => void,
   playerName: string,
   playerClass: string,
@@ -36,7 +32,7 @@ function CreatePlayer(
   startRot: Euler
 ) {
   /** Create the player model */
-  const player = new Player(modelPath, modelFile, onLoadCallback, startPos, startRot, true, playerName, playerClass);
+  const player = new Player(onLoadCallback, startPos, startRot, true, playerName, playerClass);
   console.log('Our player: ' + player._playerName);
 
   /** Store the player input */
@@ -100,7 +96,7 @@ function CreatePlayer(
 
   /** Player Loop */
   player._Tick = (deltaTime) => {
-    if (!player._mesh) return;
+    if (!player._mesh || !player._mixer) return;
 
     /** Calculate if the player is trying to walk forward */
     if (keysPressed.W || mousePressed.MMB || (mousePressed.LMB && mousePressed.RMB)) movingForward = true;
@@ -124,14 +120,16 @@ function CreatePlayer(
 
     /** Send new transform to the server */
     networkManager._SendTransform(player._mesh.position, player._mesh.rotation);
+
+    /** Update the animations */
+    player._animations[0].play();
+    player._mixer.update(deltaTime);
   };
 
   return player;
 }
 
 function CreateOtherPlayer(
-  modelPath: string,
-  modelFile: string,
   onLoadCallback: () => void,
   playerName: string,
   playerClass: string,
@@ -139,16 +137,7 @@ function CreateOtherPlayer(
   startRot: Euler
 ) {
   /** Create the player model */
-  const otherPlayer = new Player(
-    modelPath,
-    modelFile,
-    onLoadCallback,
-    startPos,
-    startRot,
-    false,
-    playerName,
-    playerClass
-  );
+  const otherPlayer = new Player(onLoadCallback, startPos, startRot, false, playerName, playerClass);
 
   console.log('other player: ' + otherPlayer._playerName);
 

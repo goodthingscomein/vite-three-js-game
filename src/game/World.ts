@@ -51,25 +51,21 @@ class World {
     /** Handle new players joining */
     networkManager._PlayerJoined = (data) => {
       if (networkedObjects.has(data.id)) return; // If we have already added this player, do not create them again...
-      console.log('New Player Joined...');
       const newPlayer = CreateOtherPlayer(
-        'mannequin',
-        'mannequin',
         () => {
           this._MakeMeshObjectInstance(newPlayer);
-          this._AddNetworkedObject(data.id, newPlayer);
         },
         data.playerName,
         data.playerClass,
         data.position,
         data.rotation
       );
+      this._AddNetworkedObject(data.id, newPlayer);
     };
 
     /** Handle loading existing players */
     networkManager._PlayersExisting = (data) => {
       if (!data.length) return;
-      console.log('Existing player...');
       for (let i = 0; i < data.length; i++) {
         // Get the data of this player
         const id = data[i][0];
@@ -79,17 +75,15 @@ class World {
 
         // Create a new player for this existing player in the world
         const newPlayer = CreateOtherPlayer(
-          'mannequin',
-          'mannequin',
           () => {
             this._MakeMeshObjectInstance(newPlayer);
-            this._AddNetworkedObject(id, newPlayer);
           },
           playerData.playerName,
           playerData.playerClass,
           playerData.position,
           playerData.rotation
         );
+        this._AddNetworkedObject(id, newPlayer);
       }
     };
 
@@ -123,8 +117,6 @@ class World {
     /** Create the player object */
     const player = CreatePlayer(
       networkManager,
-      'mannequin',
-      'mannequin',
       () => {
         this._MakeMeshObjectInstance(player);
         customCamera._SetPlayerToFollow(player);
