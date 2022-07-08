@@ -1,4 +1,5 @@
-import { Scene, Mesh, MathUtils, Vector3 } from 'three';
+import { Scene, Mesh, MathUtils, Vector3, AnimationMixer } from 'three';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 
 // Systems
 import { Renderer } from './systems/Renderer';
@@ -30,7 +31,7 @@ let networkedObjects: Map<number, CustomObject>;
 let networkedLights: Map<number, CustomLight>;
 
 class World {
-  constructor() {
+  constructor(playerName: string, playerClass: string) {
     canvas = document.querySelector<HTMLCanvasElement>('#c')!;
     scene = CreateScene(0x222222);
     customCamera = new CustomCamera();
@@ -40,7 +41,7 @@ class World {
     networkedLights = new Map<number, CustomLight>();
 
     /** Connect to the server */
-    networkManager = new NetworkManager('http://localhost:4000', 'Jai Colio', 'Warrior');
+    networkManager = new NetworkManager('http://localhost:4000', playerName, playerClass);
 
     /** Listen for the setup message from the server */
     networkManager._PlayerSetup = (data) => {
@@ -121,9 +122,7 @@ class World {
     const skybox = CreateSkybox();
     this._MakeInstance(skybox);
 
-    /** Set the camera position */
-    customCamera._camera.position.set(0, 7, -20); // Move the camera backwards
-    customCamera._camera.rotation.set(MathUtils.degToRad(15), MathUtils.degToRad(180), 0); // Move the camera backwards
+    this._LoadAnimatedModel();
   }
 
   /** Start the game loop */
@@ -157,6 +156,28 @@ class World {
   /** Set networked lights in map */
   _AddNetworkedLight(id: number, light: CustomLight) {
     networkedLights.set(id, light);
+  }
+
+  _LoadAnimatedModel() {
+    console.log('Loading');
+    const loader = new FBXLoader();
+    loader.setPath('./assets/models/mannequin/');
+    loader.load('mannequin.fbx', (fbx) => {
+      fbx.scale.setScalar(0.1);
+      fbx.traverse((c) => {
+        c.castShadow = true;
+      });
+
+      const anim = new FBXLoader();
+      anim.setPath('./assets/animations/mannequin/');
+      anim.load('run.fbx', (anim) => {
+        const mixer = new AnimationMixer(fbx);
+        const idle = mixer.clipAction(anim.animations[0]);
+        console.log(idle);
+        idle.play();
+      });
+      scene.add(fbx);
+    });
   }
 }
 

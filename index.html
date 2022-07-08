@@ -9,6 +9,23 @@
   <body>
     <div class="screen-wrapper">
       <div class="gui"></div>
+      <div class="login-screen" id="login-screen">
+        <div class="login-card">
+          <h1>Login</h1>
+          <form class="login-form" id="login-form">
+            <label class="login-label" for="playerName">Player Name</label>
+            <input class="login-field" id="playerName" name="playerName" type="text" placeholder="Player Name" />
+            <label class="login-label" for="playerClass">Player Class</label>
+            <select class="login-field" id="playerClass" name="playerClass">
+              <option value="warrior">Warrior</option>
+              <option value="mage">Mage</option>
+              <option value="rogue">Rogue</option>
+              <option value="priest">Priest</option>
+            </select>
+            <button class="login-button" type="submit">Login</button>
+          </form>
+        </div>
+      </div>
       <canvas id="c"></canvas>
     </div>
     <script type="module" src="/src/index.ts"></script>
