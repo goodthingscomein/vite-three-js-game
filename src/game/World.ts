@@ -1,9 +1,10 @@
 import { Scene, Mesh, MathUtils, Vector3, AnimationMixer } from 'three';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 
 // Systems
 import { Renderer } from './systems/Renderer';
 import { Loop } from './systems/Loop';
+import { NetworkManager, SetupData } from './systems/NetworkManager';
+import { AnimatedModelLoader } from './systems/AnimatedModelLoader';
 
 // Components
 import { CreateScene } from './components/Scene';
@@ -15,7 +16,6 @@ import { CreateOtherPlayer, CreatePlayer } from './prefabs/Player';
 import { CreateDirectionalLight, CreateAmbientLight, CustomLight } from './components/CustomLight';
 import { CreateGround } from './prefabs/Ground';
 import { CreateSkybox } from './prefabs/Skybox';
-import { NetworkManager, SetupData } from './systems/NetworkManager';
 
 let networkManager: NetworkManager;
 
@@ -122,7 +122,11 @@ class World {
     const skybox = CreateSkybox();
     this._MakeInstance(skybox);
 
-    this._LoadAnimatedModel();
+    const loader = new AnimatedModelLoader('mannequin', 'mannequin');
+    loader._OnLoadComplete = () => {
+      if (!loader._model) return;
+      scene.add(loader._model);
+    };
   }
 
   /** Start the game loop */
@@ -156,28 +160,6 @@ class World {
   /** Set networked lights in map */
   _AddNetworkedLight(id: number, light: CustomLight) {
     networkedLights.set(id, light);
-  }
-
-  _LoadAnimatedModel() {
-    console.log('Loading');
-    const loader = new FBXLoader();
-    loader.setPath('./assets/models/mannequin/');
-    loader.load('mannequin.fbx', (fbx) => {
-      fbx.scale.setScalar(0.1);
-      fbx.traverse((c) => {
-        c.castShadow = true;
-      });
-
-      const anim = new FBXLoader();
-      anim.setPath('./assets/animations/mannequin/');
-      anim.load('run.fbx', (anim) => {
-        const mixer = new AnimationMixer(fbx);
-        const idle = mixer.clipAction(anim.animations[0]);
-        console.log(idle);
-        idle.play();
-      });
-      scene.add(fbx);
-    });
   }
 }
 
