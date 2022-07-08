@@ -1,10 +1,9 @@
-import { Scene, Mesh, MathUtils, Vector3, AnimationMixer } from 'three';
+import { Scene, Mesh, Vector3 } from 'three';
 
 // Systems
 import { Renderer } from './systems/Renderer';
 import { Loop } from './systems/Loop';
 import { NetworkManager, SetupData } from './systems/NetworkManager';
-import { AnimatedModelLoader } from './systems/AnimatedModelLoader';
 
 // Components
 import { CreateScene } from './components/Scene';
@@ -52,15 +51,25 @@ class World {
     /** Handle new players joining */
     networkManager._PlayerJoined = (data) => {
       if (networkedObjects.has(data.id)) return; // If we have already added this player, do not create them again...
-      const newPlayer = CreateOtherPlayer(data.playerName, data.playerClass, data.color, data.position, data.rotation);
-      this._MakeMeshObjectInstance(newPlayer);
-      this._AddNetworkedObject(data.id, newPlayer);
+      console.log('New Player Joined...');
+      const newPlayer = CreateOtherPlayer(
+        'mannequin',
+        'mannequin',
+        () => {
+          this._MakeMeshObjectInstance(newPlayer);
+          this._AddNetworkedObject(data.id, newPlayer);
+        },
+        data.playerName,
+        data.playerClass,
+        data.position,
+        data.rotation
+      );
     };
 
     /** Handle loading existing players */
     networkManager._PlayersExisting = (data) => {
       if (!data.length) return;
-
+      console.log('Existing player...');
       for (let i = 0; i < data.length; i++) {
         // Get the data of this player
         const id = data[i][0];
@@ -70,14 +79,17 @@ class World {
 
         // Create a new player for this existing player in the world
         const newPlayer = CreateOtherPlayer(
+          'mannequin',
+          'mannequin',
+          () => {
+            this._MakeMeshObjectInstance(newPlayer);
+            this._AddNetworkedObject(id, newPlayer);
+          },
           playerData.playerName,
           playerData.playerClass,
-          playerData.color,
           playerData.position,
           playerData.rotation
         );
-        this._MakeMeshObjectInstance(newPlayer);
-        this._AddNetworkedObject(id, newPlayer);
       }
     };
 
@@ -92,20 +104,6 @@ class World {
   }
 
   _Init(data: SetupData) {
-    /** Create the player object */
-    const player = CreatePlayer(
-      networkManager,
-      data.playerName,
-      data.playerClass,
-      data.color,
-      data.position,
-      data.rotation
-    );
-    this._MakeMeshObjectInstance(player);
-    customCamera._SetPlayerToFollow(player);
-    this._AddNetworkedObject(data.id, player);
-    ourPlayerID = data.id;
-
     /** Create the directional light */
     const directionalLight = CreateDirectionalLight(0xffffff, 4, new Vector3(100, 100, 100));
     this._MakeLightInstance(directionalLight);
@@ -122,11 +120,22 @@ class World {
     const skybox = CreateSkybox();
     this._MakeInstance(skybox);
 
-    const loader = new AnimatedModelLoader('mannequin', 'mannequin');
-    loader._OnLoadComplete = () => {
-      if (!loader._model) return;
-      scene.add(loader._model);
-    };
+    /** Create the player object */
+    const player = CreatePlayer(
+      networkManager,
+      'mannequin',
+      'mannequin',
+      () => {
+        this._MakeMeshObjectInstance(player);
+        customCamera._SetPlayerToFollow(player);
+      },
+      data.playerName,
+      data.playerClass,
+      data.position,
+      data.rotation
+    );
+    this._AddNetworkedObject(data.id, player);
+    ourPlayerID = data.id;
   }
 
   /** Start the game loop */
@@ -144,6 +153,7 @@ class World {
   }
 
   _MakeMeshObjectInstance(obj: CustomObject) {
+    if (!obj._mesh) return;
     scene.add(obj._mesh);
     loop._updatables.push(obj);
   }

@@ -1,4 +1,4 @@
-import { BoxBufferGeometry, MeshStandardMaterial, ColorRepresentation, Euler, Vector3, Material } from 'three';
+import { Euler, Vector3 } from 'three';
 import { CustomObject } from '../components/CustomObject';
 import { NetworkManager } from '../systems/NetworkManager';
 import { PlayerInput } from '../systems/PlayerInput';
@@ -9,15 +9,16 @@ class Player extends CustomObject {
   _playerClass: string;
 
   constructor(
-    geometry: BoxBufferGeometry,
-    material: Material,
+    modelPath: string,
+    modelFile: string,
+    onLoadCallback: () => void,
     position: Vector3,
     rotation: Euler,
     isControllable: boolean,
     playerName: string,
     playerClass: string
   ) {
-    super(geometry, material, position, rotation);
+    super(modelPath, modelFile, position, rotation, onLoadCallback);
     this._controllable = isControllable;
     this._playerName = playerName;
     this._playerClass = playerClass;
@@ -26,17 +27,16 @@ class Player extends CustomObject {
 
 function CreatePlayer(
   networkManager: NetworkManager,
+  modelPath: string,
+  modelFile: string,
+  onLoadCallback: () => void,
   playerName: string,
   playerClass: string,
-  color: ColorRepresentation,
   startPos: Vector3,
   startRot: Euler
 ) {
   /** Create the player model */
-  const geometry = new BoxBufferGeometry(1, 2, 1);
-  const material = new MeshStandardMaterial({ color });
-  const player = new Player(geometry, material, startPos, startRot, true, playerName, playerClass);
-  player._mesh.castShadow = true;
+  const player = new Player(modelPath, modelFile, onLoadCallback, startPos, startRot, true, playerName, playerClass);
   console.log('Our player: ' + player._playerName);
 
   /** Store the player input */
@@ -100,6 +100,8 @@ function CreatePlayer(
 
   /** Player Loop */
   player._Tick = (deltaTime) => {
+    if (!player._mesh) return;
+
     /** Calculate if the player is trying to walk forward */
     if (keysPressed.W || mousePressed.MMB || (mousePressed.LMB && mousePressed.RMB)) movingForward = true;
     else movingForward = false;
@@ -128,21 +130,30 @@ function CreatePlayer(
 }
 
 function CreateOtherPlayer(
+  modelPath: string,
+  modelFile: string,
+  onLoadCallback: () => void,
   playerName: string,
   playerClass: string,
-  color: ColorRepresentation,
   startPos: Vector3,
   startRot: Euler
 ) {
   /** Create the player model */
-  const geometry = new BoxBufferGeometry(1, 2, 1);
-  const material = new MeshStandardMaterial({ color });
-  const otherPlayer = new Player(geometry, material, startPos, startRot, false, playerName, playerClass);
-  otherPlayer._mesh.castShadow = true;
+  const otherPlayer = new Player(
+    modelPath,
+    modelFile,
+    onLoadCallback,
+    startPos,
+    startRot,
+    false,
+    playerName,
+    playerClass
+  );
 
   console.log('other player: ' + otherPlayer._playerName);
 
   otherPlayer._Tick = (deltaTime) => {
+    if (!otherPlayer._mesh) return;
     otherPlayer._mesh.position.lerp(otherPlayer._targetTransform.position, 0.2);
     otherPlayer._mesh.quaternion.slerp(otherPlayer._targetTransform.quaternion, 0.45);
   };
