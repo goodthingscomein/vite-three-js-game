@@ -8,7 +8,6 @@ class CustomObject extends Updatable {
   _animations: AnimationAction[] = [];
   _activeAnimation: AnimationAction | undefined;
   _lastAnimation: AnimationAction | undefined;
-  _activeAnimationIndex = 0;
 
   constructor(
     modelPath: string,
@@ -40,7 +39,7 @@ class CustomObject extends Updatable {
   }
 
   _SetAnimation(index: number) {
-    if (this._activeAnimationIndex === index) return;
+    if (this._activeAnimation === this._animations[index]) return;
     this._lastAnimation = this._activeAnimation;
     if (this._lastAnimation) {
       this._lastAnimation.fadeOut(0.2);
@@ -49,7 +48,6 @@ class CustomObject extends Updatable {
     this._activeAnimation.reset();
     this._activeAnimation.fadeIn(0.2);
     this._activeAnimation.play();
-    this._activeAnimationIndex = index;
     this._AnimationChanged(index);
   }
 

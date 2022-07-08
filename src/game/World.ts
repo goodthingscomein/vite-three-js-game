@@ -54,6 +54,7 @@ class World {
       const newPlayer = CreateOtherPlayer(
         () => {
           this._MakeMeshObjectInstance(newPlayer);
+          newPlayer._SetAnimation(0); // set idle animation as default
         },
         data.playerName,
         data.playerClass,
@@ -77,6 +78,7 @@ class World {
         const newPlayer = CreateOtherPlayer(
           () => {
             this._MakeMeshObjectInstance(newPlayer);
+            newPlayer._SetAnimation(0); // set idle animation as default
           },
           playerData.playerName,
           playerData.playerClass,

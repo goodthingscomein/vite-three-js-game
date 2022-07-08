@@ -126,11 +126,11 @@ function CreatePlayer(
 
     /** Calculate animations */
     player._animations[0].play();
-    if (keysPressed.A && !keysPressed.D) player._SetAnimation(3);
-    else if (!keysPressed.A && keysPressed.D) player._SetAnimation(4);
-    else if (movingForward && !keysPressed.S) player._SetAnimation(1);
-    else if (!movingForward && keysPressed.S) player._SetAnimation(2);
-    else player._SetAnimation(0);
+    if (keysPressed.A && !keysPressed.D) player._SetAnimation(3); // animate run left
+    else if (!keysPressed.A && keysPressed.D) player._SetAnimation(4); // animate run right
+    else if (movingForward && !keysPressed.S) player._SetAnimation(1); // animate run forward
+    else if (!movingForward && keysPressed.S) player._SetAnimation(2); // animate run back
+    else player._SetAnimation(0); // animate idle
 
     /** Update the animations */
     player._mixer.update(deltaTime);
